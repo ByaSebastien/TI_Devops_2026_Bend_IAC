@@ -1,7 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using TI_Devops_2026_Bend_IAC.contexts;
@@ -15,8 +14,7 @@ namespace TI_Devops_2026_Bend_IAC.Controllers
     public class ProductController(
         MyDbContext context,
         BlobContainerClient container,
-        ServiceBusClient bus,
-        IConfiguration configuration
+        ServiceBusClient bus
         ) : ControllerBase
     {
 

@@ -1,3 +1,5 @@
+using Azure.Messaging.ServiceBus;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using TI_Devops_2026_Bend_IAC.contexts;
@@ -14,6 +16,9 @@ builder.Services.AddDbContext<MyDbContext>(o =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("Main"));
 });
+
+builder.Services.AddScoped(_ => new BlobContainerClient(builder.Configuration.GetConnectionString("Blob"), "images"));
+builder.Services.AddScoped(_ => new ServiceBusClient(builder.Configuration.GetConnectionString("Bus")));
 
 var app = builder.Build();
 
