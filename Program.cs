@@ -17,8 +17,8 @@ builder.Services.AddDbContext<MyDbContext>(o =>
     o.UseSqlServer(builder.Configuration.GetConnectionString("Main"));
 });
 
-builder.Services.AddScoped(_ => new BlobContainerClient(builder.Configuration.GetConnectionString("Blob"), "images"));
-builder.Services.AddScoped(_ => new ServiceBusClient(builder.Configuration.GetConnectionString("Bus")));
+//builder.Services.AddScoped(_ => new BlobContainerClient(builder.Configuration.GetConnectionString("Blob"), "images"));
+//builder.Services.AddScoped(_ => new ServiceBusClient(builder.Configuration.GetConnectionString("Bus")));
 
 var app = builder.Build();
 
