@@ -1,0 +1,6 @@
+@TI_Devops_2026_Bend_IAC_HostAddress = http://localhost:5097
+
+GET {{TI_Devops_2026_Bend_IAC_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
