@@ -21,46 +21,54 @@ namespace TI_Devops_2026_Bend_IAC.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromForm] ProductForm form)
         {
-
-            var product = new Product
+            try
             {
-                Name = form.Name
-            };
 
-            var added = (await context.Products.AddAsync(product)).Entity;
-            await context.SaveChangesAsync();
 
-            var stream = new MemoryStream();
-
-            await form.Image.CopyToAsync(stream);
-
-            stream.Position = 0;
-
-            var blobName = Guid.NewGuid().ToString();
-
-            var blobClient = container.GetBlobClient(blobName);
-
-            var uploadOptions = new BlobUploadOptions
-            {
-                HttpHeaders = new BlobHttpHeaders
+                var product = new Product
                 {
-                    ContentType = form.Image.ContentType
-                },
-                Metadata = new Dictionary<string, string>
+                    Name = form.Name
+                };
+
+                var added = (await context.Products.AddAsync(product)).Entity;
+                await context.SaveChangesAsync();
+
+                var stream = new MemoryStream();
+
+                await form.Image.CopyToAsync(stream);
+
+                stream.Position = 0;
+
+                var blobName = Guid.NewGuid().ToString();
+
+                var blobClient = container.GetBlobClient(blobName);
+
+                var uploadOptions = new BlobUploadOptions
+                {
+                    HttpHeaders = new BlobHttpHeaders
+                    {
+                        ContentType = form.Image.ContentType
+                    },
+                    Metadata = new Dictionary<string, string>
                 {
                     { "productId", added.Id.ToString() }
                 }
-            };
+                };
 
-            await blobClient.UploadAsync(stream, uploadOptions);
+                await blobClient.UploadAsync(stream, uploadOptions);
 
-            var sender = bus.CreateSender("devops-2026-queue");
+                var sender = bus.CreateSender("devops-2026-queue");
 
-            var message = new ServiceBusMessage(JsonSerializer.Serialize(added));
+                var message = new ServiceBusMessage(JsonSerializer.Serialize(added));
 
-            await sender.SendMessageAsync(message);
+                await sender.SendMessageAsync(message);
 
-            return Ok(added);
+                return Ok(added);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("image/{productId}")]
@@ -73,7 +81,7 @@ namespace TI_Devops_2026_Bend_IAC.Controllers
                 return properties.Value.Metadata.TryGetValue("productId", out var id) && id.ToString() == productId;
             });
 
-            if(blob == null)
+            if (blob == null)
             {
                 return NotFound();
             }
